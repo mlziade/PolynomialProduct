@@ -30,6 +30,26 @@ int* polynomialProductBruteForce(int s, int* a1, int* a2){
   return a3;
 }
 
+int* polynomialProductDivideConquer(int n, int* a, int*b){
+  
+  int* reslt;
+  reslt = (int*) malloc(sizeof(int) * ((n*2)-1) );
+  int i,j;
+
+  if (n > 2){ //Enquanto s for maior que 2
+    //Algoritimo
+  }
+  else{ //Quando s chegar a 2
+    reslt[0] = (a[0]*b[0]);
+    reslt[1] = (a[0]*b[1])+ (a[1]*b[0]);
+    reslt[2] = (a[1]*b[1]);
+    return reslt;
+  }
+  
+  
+
+}
+
 int main(){
   int size = 7;
   int array1[] = {2, 3, 4, 5, 6, 7, 8};

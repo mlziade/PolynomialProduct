@@ -1,33 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/resource.h>
 // #include "tempoCPU.h"
 
-void printPolynom(int s, int* a){
-  int i;
-  printf("Vetor = [");
-  for (i = 0; i < s-1; i++){
-    printf(" %dx^%d,", a[i],i);
+void printPolynom(int s, int* a, char* nome_vet){
+  printf("%s = [", nome_vet);
+  for (int i = 0; i < s-1; i++){
+    if(i==0) printf("%dx^%d", a[i], i);
+    else if(i<s-2) printf(" %dx^%d,", a[i],i);
+    else printf(" %dx^%d", a[i], i);
   }
   printf("]\n");
   return;
 }
 
-int* polynomialProductBruteForce(int s, int* a1, int* a2){
+int* polynomialProductBruteForce(int size_arrays, int* polinomio_A, int* polinomio_B){
 
-  int* a3;
-  a3 =(int*) malloc(sizeof(int) * ((s*2)-1) );
-  int i,j;
+  int* prod_polinomios =(int*) malloc(sizeof(int) * ((size_arrays*2)-1) );
 
-  for ( i = 0; i < (s*2)-2; i++) a3[i] = 0;
-  // printPolynom((s*2)-1, a3);
+  for (int i = 0; i < (size_arrays*2)-2; i++) prod_polinomios[i] = 0;
 
-  for ( i = 0; i < s; i++){
-    for (j = 0; j < s ; j++){
-      a3[i+j] = a3[i+j] + (a1[i]*a2[j]);
-      // printf("i = %d j = %d i+j = %d\n",i,j, i+j);
+  for (int i = 0; i < size_arrays; i++){
+    for (int j = 0; j < size_arrays ; j++){
+      prod_polinomios[i+j] = prod_polinomios[i+j] + (polinomio_A[i]*polinomio_B[j]);
     }
   }
-  return a3;
+  return prod_polinomios;
 }
 
 int* polynomialProductDivideConquer(int n, int* a, int*b){
@@ -45,19 +43,20 @@ int* polynomialProductDivideConquer(int n, int* a, int*b){
     
     //A0B0
     aux1 = polynomialProductDivideConquer(n/2, a, b);
+    printPolynom(n/2, aux1, "Divide & Conquer");
     for (i = 0; i < n-1; i++){
       reslt[i] = aux1[i];
     }
 
-    //A0B1
-    aux1 = polynomialProductDivideConquer(n/2, a, b + sizeof(int) * n/2);
-    aux2 = polynomialProductDivideConquer(n/2, a + sizeof(int) * n/2, b);
+    //A0B1 e A1B0
+    aux1 = polynomialProductDivideConquer(n/2, a, b + n/2);
+    aux2 = polynomialProductDivideConquer(n/2, a + n/2, b);
     for (i = n/2 ;i < n-1; i++){
       reslt[i] = aux1[i] + aux2[i];
     }
 
     //A1B1
-    aux1 = polynomialProductDivideConquer(n/2, a + sizeof(int) * n/2, b + sizeof(int) * n/2);
+    aux1 = polynomialProductDivideConquer(n/2, a + n/2, b + n/2);
     for (i = n; i < n*2 -1; i++){
       reslt[i] = aux1[i];
     }
@@ -72,16 +71,49 @@ int* polynomialProductDivideConquer(int n, int* a, int*b){
   return reslt;
 }
 
+void Tempo_CPU_Sistema(double *seg_CPU_total, double *seg_sistema_total)
+{
+  long seg_CPU, seg_sistema, mseg_CPU, mseg_sistema;
+  struct rusage ptempo;
+
+  getrusage(RUSAGE_SELF,&ptempo);
+
+  seg_CPU = ptempo.ru_utime.tv_sec;
+  mseg_CPU = ptempo.ru_utime.tv_usec;
+  seg_sistema = ptempo.ru_stime.tv_sec;
+  mseg_sistema = ptempo.ru_stime.tv_usec;
+
+ *seg_CPU_total     = (seg_CPU + 0.000001 * mseg_CPU);
+ *seg_sistema_total = (seg_sistema + 0.000001 * mseg_sistema);
+}
+
 int main(){
-  int size = 7;
-  int array1[] = {2, 3, 4, 5, 6, 7, 8};
-  int array2[] = {8, 7, 6, 5, 4, 3, 2};
+  int size = 14;
+  int polinomio_A[] = {2, 3, 4, 5, 6, 7, 8, 10, 5, 7, 9, 8, 6, 9, 19, 10, 11, 2};
+  int polinomio_B[] = {8, 7, 6, 5, 4, 3, 2, 19, 5, 6, 7, 8, 8, 1, 19, 32, 99, 7};
+  double start_seg_CPU_total;
+  double start_seg_sistema_total;
+  double end_seg_CPU_total;
+  double end_seg_sistema_total;
+  Tempo_CPU_Sistema(&start_seg_CPU_total, &start_seg_sistema_total);
+  printf("%f\n", start_seg_CPU_total);
+  printf("%f\n", start_seg_sistema_total);
+  int* bf_result = polynomialProductBruteForce(size, polinomio_A, polinomio_B); 
+  Tempo_CPU_Sistema(&end_seg_CPU_total, &end_seg_sistema_total);
+  printf("%f\n", end_seg_CPU_total);
+  printf("%f\n", end_seg_sistema_total);
 
-  int* arrayBF = polynomialProductBruteForce(size, array1, array2); 
-  printPolynom(size * 2, arrayBF);
+  double delta_CPU = end_seg_CPU_total - start_seg_CPU_total;
+  double delta_SIST = end_seg_sistema_total - start_seg_sistema_total;
 
-  int* arrayDC = polynomialProductDivideConquer(size, array1, array2);
-  printPolynom(size * 2, arrayDC);
+  printf("\n Delta CPU: %f", delta_CPU);
+  printf("\n Delta SIST: %f\n", delta_SIST);
+
+
+  printPolynom(size * 2, bf_result, "Brute Force");
+
+  // int* dc_result = polynomialProductDivideConquer(size, polinomio_A, polinomio_B);
+  // printPolynom(size*2, dc_result);
 
   return 0;
 }

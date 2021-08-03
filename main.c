@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/resource.h>
-// #include "tempoCPU.h"
+#include "tempoCPU.h"
 
 void printPolynom(int s, int* a, char* nome_vet){
   printf("%s = [", nome_vet);
@@ -31,10 +31,10 @@ int* polynomialProductBruteForce(int size_arrays, int* polinomio_A, int* polinom
 int* polynomialProductDivideConquer(int n, int* a, int*b){
   
   int *reslt;
-  reslt = (int*) malloc(sizeof(int) * ((n*2)-1) );
+  reslt = (int*) calloc(sizeof(int) * ((n*2)-1) );
   int *aux1, *aux2;
-  aux1 = (int*) malloc(sizeof(int) * (n-1));
-  aux2 = (int*) malloc(sizeof(int) * (n-1));
+  aux1 = (int*) calloc(sizeof(int) * (n-1));
+  aux2 = (int*) calloc(sizeof(int) * (n-1));
 
   int i,j;
   // printf("Geracao n=%d\n", n);
@@ -112,9 +112,9 @@ void Tempo_CPU_Sistema(double *seg_CPU_total, double *seg_sistema_total)
 }
 
 int main(){
-  int size = 14;
-  int polinomio_A[] = {2, 3, 4, 5, 6, 7, 8, 10, 5, 7, 9, 8, 6, 9, 19, 10, 11, 2};
-  int polinomio_B[] = {8, 7, 6, 5, 4, 3, 2, 19, 5, 6, 7, 8, 8, 1, 19, 32, 99, 7};
+  int size = 16;
+  int polinomio_A[] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+  int polinomio_B[] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
   double start_seg_CPU_total;
   double start_seg_sistema_total;
   double end_seg_CPU_total;

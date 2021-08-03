@@ -31,65 +31,42 @@ int* polynomialProductBruteForce(int size_arrays, int* polinomio_A, int* polinom
 int* polynomialProductDivideConquer(int n, int* a, int*b){
   
   int *reslt;
-  reslt = (int*) calloc(sizeof(int) * ((n*2)-1) );
-  int *aux1, *aux2;
-  aux1 = (int*) calloc(sizeof(int) * (n-1));
-  aux2 = (int*) calloc(sizeof(int) * (n-1));
+  reslt = (int*) calloc((n*2)-1, sizeof(int));
+  int *aux1, *aux2, *aux3, *aux4;
+  aux1 = (int*) malloc(sizeof(int) * (n-1));
+  aux2 = (int*) malloc(sizeof(int) * (n-1));
+  aux3 = (int*) malloc(sizeof(int) * (n-1));
+  aux4 = (int*) malloc(sizeof(int) * (n-1));
 
   int i,j;
-  // printf("Geracao n=%d\n", n);
-
-  for(i=0; i < n*2-1; i++) reslt[i] = 0;
 
   if (n > 2){ //Enquanto s for maior que 2
     //Algoritimo
     
     //A0B0
-    // printf("teste A0B0\n");
-    // printPolynom(n/2, a);
-    // printPolynom(n/2, b);
     aux1 = polynomialProductDivideConquer(n/2, a, b);
-    // printf("resp A0B0 geracao %d\n", n);
-    // printPolynom(2*(n/2) - 1, aux1);
-    for (i = 0; i < 2*(n/2) -1; i++){
-      reslt[i] += aux1[i];
-      // printf("reslt[%d] = %d\n", i, reslt[i]);
-    }
 
     //A0B1 e A1B0
-    // printf("teste A0B1 A1B0 \n");
-    // printPolynom(n/2, a);
-    // printPolynom(n/2, b + n/2);
-    // printPolynom(n/2, a + n/2);
-    // printPolynom(n/2, b);
-    aux1 = polynomialProductDivideConquer(n/2, a, b + n/2);
-    aux2 = polynomialProductDivideConquer(n/2, a + n/2, b);
-    // printf("resp A0B1 e A1B0 geracao %d\n", n);
-    // printPolynom(2*(n/2) - 1, aux1);
-    // printPolynom(2*(n/2) - 1, aux2);
-    for (i = 0 ;i < 2*(n/2) -1; i++){
-      reslt[i+n/2] +=  aux1[i] + aux2[i];
-      // printf("reslt[%d] = %d\n", i+n/2, reslt[i+n/2]);
-    }
+    aux2 = polynomialProductDivideConquer(n/2, a, b + n/2);
+    aux3 = polynomialProductDivideConquer(n/2, a + n/2, b);
 
     //A1B1
-    // printf("teste A1B1\n");
-    // printPolynom(n/2, a + n/2);
-    // printPolynom(n/2, b + n/2);
-    aux1 = polynomialProductDivideConquer(n/2, a + n/2, b + n/2);
-    // printf("resp A1B1 geracao %d\n", n);
-    // printPolynom(2*(n/2) - 1, aux1);
+    aux4 = polynomialProductDivideConquer(n/2, a + n/2, b + n/2);
     for (i = 0; i < 2*(n/2) -1; i++){
-      reslt[i+n] += aux1[i];
-      // printf("reslt[%d] = %d\n", i+n, reslt[i+n]);
+      reslt[i] += aux1[i];
+      reslt[i+n/2] += aux2[i] + aux3[i];
+      reslt[i+n] += aux4[i];
     }
+    free(aux1);
+    free(aux2);
+    free(aux3);
+    free(aux4);
     return reslt;
   }
   else{ //Quando s chegar a 2
     reslt[0] = (a[0]*b[0]);
     reslt[1] = (a[0]*b[1])+ (a[1]*b[0]);
     reslt[2] = (a[1]*b[1]);
-    // printPolynom(2*n-1, reslt);
     return reslt;
   }
   return reslt;
@@ -139,7 +116,7 @@ int main(){
   printPolynom(size * 2, bf_result, "Brute Force");
   printPolynom(size*2, dc_result, "Divide & Conquer");
   // int* dc_result = polynomialProductDivideConquer(size, polinomio_A, polinomio_B);
-  // printPolynom(size*2, dc_result);
+  // printPolynom(size*2, dc_result, "Divide & Conquer");
 
 
   return 0;

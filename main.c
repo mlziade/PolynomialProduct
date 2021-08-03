@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/resource.h>
-#include "tempoCPU.h"
+#include <string.h>
+
+// #include "tempoCPU.h"
 
 void printPolynom(int s, int* a, char* nome_vet){
   printf("%s = [", nome_vet);
@@ -72,52 +74,70 @@ int* polynomialProductDivideConquer(int n, int* a, int*b){
   return reslt;
 }
 
-void Tempo_CPU_Sistema(double *seg_CPU_total, double *seg_sistema_total)
+void Tempo_CPU_Sistema(double *seg_CPU_total)
 {
   long seg_CPU, seg_sistema, mseg_CPU, mseg_sistema;
   struct rusage ptempo;
 
-  getrusage(RUSAGE_SELF,&ptempo);
+  getrusage(0,&ptempo);
 
   seg_CPU = ptempo.ru_utime.tv_sec;
   mseg_CPU = ptempo.ru_utime.tv_usec;
-  seg_sistema = ptempo.ru_stime.tv_sec;
-  mseg_sistema = ptempo.ru_stime.tv_usec;
 
- *seg_CPU_total     = (seg_CPU + 0.000001 * mseg_CPU);
- *seg_sistema_total = (seg_sistema + 0.000001 * mseg_sistema);
+ *seg_CPU_total = (seg_CPU + 0.000001 * mseg_CPU);
 }
 
+int* calcula_produto_polinomial(int** polinomio_A, int** polinomio_B, int grau, char* metodo, double* delta_cpu){
+    double start_cpu_time = 0;
+    double end_cpu_time = 0;
+
+    int* result;
+
+    Tempo_CPU_Sistema(&start_cpu_time);
+    if(metodo=="bf") result = polynomialProductBruteForce(grau*2, *polinomio_A, *polinomio_B);
+    if(metodo=="dc") result = polynomialProductDivideConquer(grau*2, *polinomio_A, *polinomio_B);
+    Tempo_CPU_Sistema(&end_cpu_time);
+
+    *delta_cpu = end_cpu_time - start_cpu_time;
+    
+    *polinomio_A = realloc(*polinomio_A, grau * sizeof(int));
+    (*polinomio_A)[grau-1] = 3;
+    *polinomio_B = realloc(*polinomio_B, grau * sizeof(int));
+    (*polinomio_B)[grau-1] = 3;
+    
+    printf("Grau: %d, Tempo de CPU do método %s: %f\n", grau, metodo, *delta_cpu);
+    printf("\n");
+      
+    return result;
+
+}
+
+
 int main(){
-  int size = 16;
-  int polinomio_A[] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-  int polinomio_B[] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
-  double start_seg_CPU_total;
-  double start_seg_sistema_total;
-  double end_seg_CPU_total;
-  double end_seg_sistema_total;
-  Tempo_CPU_Sistema(&start_seg_CPU_total, &start_seg_sistema_total);
-  printf("%f\n", start_seg_CPU_total);
-  printf("%f\n", start_seg_sistema_total);
-  int* bf_result = polynomialProductBruteForce(size, polinomio_A, polinomio_B); 
-  Tempo_CPU_Sistema(&end_seg_CPU_total, &end_seg_sistema_total);
-  printf("%f\n", end_seg_CPU_total);
-  printf("%f\n", end_seg_sistema_total);
-  int* dc_result = polynomialProductDivideConquer(size, polinomio_A, polinomio_B); 
+  int grau = 2;
+  int* polinomio_A = (int*) malloc(sizeof(int)*grau);
+  int* polinomio_B = (int*) malloc(sizeof(int)*grau);
+  int data_A[] = { 8, 7 };
+  int data_B[] = { 8, 7 };
 
+  memcpy(polinomio_A, data_A, sizeof(data_A));
+  memcpy(polinomio_B, data_B, sizeof(data_B));
 
-  double delta_CPU = end_seg_CPU_total - start_seg_CPU_total;
-  double delta_SIST = end_seg_sistema_total - start_seg_sistema_total;
+  for(int i=0; i<grau; i++) printf("%d ", polinomio_A[i]);
+  printf("\n");
 
-  printf("\n Delta CPU: %f", delta_CPU);
-  printf("\n Delta SIST: %f\n", delta_SIST);
+  double delta_cpu_bf;
+  double delta_cpu_dc;
 
-
-  printPolynom(size * 2, bf_result, "Brute Force");
-  printPolynom(size*2, dc_result, "Divide & Conquer");
-  // int* dc_result = polynomialProductDivideConquer(size, polinomio_A, polinomio_B);
-  // printPolynom(size*2, dc_result, "Divide & Conquer");
-
+  while(grau<2000){
+    grau+=2;
+    int* result_bf = calcula_produto_polinomial(&polinomio_A, &polinomio_B, grau, "bf", &delta_cpu_bf);
+    free(result_bf);
+    //Escreve os resultados
+    int* result_dc = calcula_produto_polinomial(&polinomio_A, &polinomio_B, grau, "dc", &delta_cpu_dc);
+    free(result_dc);
+    //Escreve os resultados
+  }
 
   return 0;
 }

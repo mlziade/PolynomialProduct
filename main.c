@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-// #include "tempoCPU.h"
+#include <sys/resource.h>
 
 void printPolynom(int s, int* a){
   int i;
-  printf("Vetor = [");
+  printf("= [");
   for (i = 0; i < s; i++){
     printf(" %dx^%d,", a[i],i);
   }
@@ -28,6 +28,22 @@ int* polynomialProductBruteForce(int s, int* a1, int* a2){
   return a3;
 }
 
+void Tempo_CPU_Sistema(double *seg_CPU_total, double *seg_sistema_total)
+{
+  long seg_CPU, seg_sistema, mseg_CPU, mseg_sistema;
+  struct rusage ptempo;
+
+  getrusage(0,&ptempo);
+
+  seg_CPU = ptempo.ru_utime.tv_sec;
+  mseg_CPU = ptempo.ru_utime.tv_usec;
+  seg_sistema = ptempo.ru_stime.tv_sec;
+  mseg_sistema = ptempo.ru_stime.tv_usec;
+
+ *seg_CPU_total     = (seg_CPU + 0.000001 * mseg_CPU);
+ *seg_sistema_total = (seg_sistema + 0.000001 * mseg_sistema);
+}
+
 int* polynomialProductDivideConquer(int n, int* a, int*b){
   
   int *reslt;
@@ -39,8 +55,6 @@ int* polynomialProductDivideConquer(int n, int* a, int*b){
   aux4 = (int*) malloc(sizeof(int) * (n-1));
 
   int i,j;
-
-  // for(i=0; i < n*2-1; i++) reslt[i] = 0;
 
   if (n > 2){ //Enquanto s for maior que 2
     //Algoritimo
@@ -75,24 +89,42 @@ int* polynomialProductDivideConquer(int n, int* a, int*b){
 }
 
 int main(){
+
+  //Inicializa vetores
   int size = 8;
   int array1[] = {2, 3, 4, 5, 6, 7, 8, 9};
   int array2[] = {9, 8, 7, 6, 5, 4, 3, 2};
 
-  // printf("%d\n", sizeof(int));
-  // printf("%d %d\n", &array1, &array2);
-  // printf("%d %d\n", array1 + sizeof(int)*size/2, array2 + size/2);
-  // printf("%d %d\n", *(array1 + sizeof(int)*size/2), *(array2 + size/2));
-  // printf("%d %d\n",array1[size/2] ,&array1[size/2]);
+  //Arquivos
+  FILE* saidaBF = fopen("teste.txt", "w");
+  FILE* saidaDC = fopen("teste.txt", "w");
 
+  //Mede tempo de cpu
+  double start_cpu_time = 0;
+  double start_sistema_time = 0;
+  double end_cpu_time = 0;
+  double end_sistema_time = 0;
+  double delta_cpu = 0;
+
+//Brute Force
+  Tempo_CPU_Sistema(&start_cpu_time, &start_sistema_time);
   int* arrayBF = polynomialProductBruteForce(size, array1, array2);
   printf("Algoritimo Brute Force ");
   printPolynom(size * 2, arrayBF);
+  Tempo_CPU_Sistema(&end_cpu_time, &end_sistema_time);
+  delta_cpu = end_cpu_time - start_cpu_time;
+  printf("Tempo de execução de CPU bf: %f\n",delta_cpu);
+  free(arrayBF);
 
+  //Divide and Conquer
+  Tempo_CPU_Sistema(&start_cpu_time, &start_sistema_time);
   int* arrayDC = polynomialProductDivideConquer(size, array1, array2);
   printf("Algoritimo Divide and Conquer ");
   printPolynom(size * 2, arrayDC);
-
+  Tempo_CPU_Sistema(&end_cpu_time, &end_sistema_time);
+  delta_cpu = end_cpu_time - start_cpu_time;
+  printf("Tempo de execução de CPU dc: %f\n",delta_cpu);
+  free(arrayDC);
 
   return 0;
 }

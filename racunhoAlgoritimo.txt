@@ -24,3 +24,11 @@ resp[n...2n-1]  = A1B1[0...n/2 - 1]
 
 A = 2 + 3x + 4x^2 + 5x^3 + 6x^4 + 7x^5 + 8x^6 + 9x^7
 B = 9 + 8x + 7x^2 + 6x^3 + 5x^4 + 4x^5 + 3x^6 + 2x^7
+
+Ao inves de usar A0B0, A0B1, A1B0, A1B1 podemos usar
+
+Y = (A0+A1)(B0+B1)
+U = A0B0
+Z = A1B1
+
+A0B1 + A1B0 = Y - U - Z

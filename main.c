@@ -123,9 +123,9 @@ int* calcula_produto_polinomial(int** polinomio_A, int** polinomio_B, int grau, 
 
     *delta_cpu = end_cpu_time - start_cpu_time;
     
-    *polinomio_A = realloc(*polinomio_A, grau * sizeof(int));
+    // *polinomio_A = realloc(*polinomio_A, grau * sizeof(int));
     (*polinomio_A)[grau-1] = 3;
-    *polinomio_B = realloc(*polinomio_B, grau * sizeof(int));
+    // *polinomio_B = realloc(*polinomio_B, grau * sizeof(int));
     (*polinomio_B)[grau-1] = 3;
     
     printf("Grau: %d, Tempo de CPU do método %s: %f\n", grau, metodo, *delta_cpu);

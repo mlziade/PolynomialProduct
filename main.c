@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/resource.h>
+#include <math.h>
 
 void printPolynom(int s, int* a){
   int i;
@@ -155,12 +156,47 @@ int* polynomialProductuDivideConquer4(int n, int* a, int*b){
   return reslt;
 }
 
+
+void calculaPol(double* delta_cpu, int size, int* array1, int* array2, FILE** saidaBF){
+
+  double start_cpu_time = 0;
+  double start_sistema_time = 0;
+  double end_cpu_time = 0;
+  double end_sistema_time = 0;
+  
+  Tempo_CPU_Sistema(&start_cpu_time, &start_sistema_time);
+  int* arrayBF = polynomialProductBruteForce(size, array1, array2);
+  Tempo_CPU_Sistema(&end_cpu_time, &end_sistema_time);
+  
+  printf("Algoritmo Brute Force ");
+  printPolynom(size * 2, arrayBF);
+  *delta_cpu = end_cpu_time - start_cpu_time;
+  printf("Tempo de execução de CPU bf: %f\n", *delta_cpu);
+  fprintf(*saidaBF, "Grau %d Tempo %f\n", size, *delta_cpu);
+  free(arrayBF);
+
+  return;
+}
+
+void preenche_vetor(int** array1, int** array2, int size){
+ 
+  *array1 = (int*) malloc(sizeof(int)*size);
+  *array2 = (int*) malloc(sizeof(int)*size);
+
+   for(int i = 0; i < size ; i++){
+    (*array1)[i] = 2;
+    (*array2)[i] = 2;
+  }
+
+  return;
+}
+
 int main(){
 
   int i;
 
   //Inicializa vetores
-  int size = 2048;
+  int size = 2;
   int *array1 = (int*) malloc(sizeof(int)*size);
   int *array2 = (int*) malloc(sizeof(int)*size);
   for(i = 0; i < size ; i++){
@@ -174,44 +210,37 @@ int main(){
   FILE* saidaDC3 = fopen("saidaDC3.txt", "w");
 
   //Mede tempo de cpu
-  double start_cpu_time = 0;
-  double start_sistema_time = 0;
-  double end_cpu_time = 0;
-  double end_sistema_time = 0;
+  do{ 
   double delta_cpu = 0;
-
+  calculaPol(&delta_cpu, size, array1, array2, &saidaBF);
+  size*=2;
+  preenche_vetor(&array1, &array2, size);
+  }
+  while(size<2048); 
 //Brute Force
-  Tempo_CPU_Sistema(&start_cpu_time, &start_sistema_time);
-  int* arrayBF = polynomialProductBruteForce(size, array1, array2);
-  Tempo_CPU_Sistema(&end_cpu_time, &end_sistema_time);
-  printf("Algoritimo Brute Force ");
-  printPolynom(size * 2, arrayBF);
-  delta_cpu = end_cpu_time - start_cpu_time;
-  printf("Tempo de execução de CPU bf: %f\n",delta_cpu);
-  fprintf(saidaBF, "Grau %d Tempo %f", size, delta_cpu);
-  free(arrayBF);
+ 
 
-  //Divide and Conquer4
-  Tempo_CPU_Sistema(&start_cpu_time, &start_sistema_time);
-  int* arrayDC4 = polynomialProductuDivideConquer4(size, array1, array2);
-  Tempo_CPU_Sistema(&end_cpu_time, &end_sistema_time);
-  printf("Algoritimo Divide and Conquer 4 ");
-  printPolynom(size * 2, arrayDC4);
-  delta_cpu = end_cpu_time - start_cpu_time;
-  printf("Tempo de execução de CPU dc4: %f\n",delta_cpu);
-  fprintf(saidaDC4, "Grau %d Tempo %f\n", size, delta_cpu);
-  free(arrayDC4);
+  // //Divide and Conquer4
+  // Tempo_CPU_Sistema(&start_cpu_time, &start_sistema_time);
+  // int* arrayDC4 = polynomialProductuDivideConquer4(size, array1, array2);
+  // Tempo_CPU_Sistema(&end_cpu_time, &end_sistema_time);
+  // printf("Algoritimo Divide and Conquer 4 ");
+  // printPolynom(size * 2, arrayDC4);
+  // delta_cpu = end_cpu_time - start_cpu_time;
+  // printf("Tempo de execução de CPU dc4: %f\n",delta_cpu);
+  // fprintf(saidaDC4, "Grau %d Tempo %f\n", size, delta_cpu);
+  // free(arrayDC4);
 
-  //Divide and Conquer3
-  Tempo_CPU_Sistema(&start_cpu_time, &start_sistema_time);
-  int* arrayDC3 = polynomialProductuDivideConquer3(size, array1, array2);
-  Tempo_CPU_Sistema(&end_cpu_time, &end_sistema_time);
-  printf("Algoritimo Divide and Conquer 3 ");
-  printPolynom(size * 2, arrayDC3);
-  delta_cpu = end_cpu_time - start_cpu_time;
-  printf("Tempo de execução de CPU dc3: %f\n",delta_cpu);
-  fprintf(saidaDC3, "Grau %d Tempo %f\n", size, delta_cpu);
-  free(arrayDC3);
+  // //Divide and Conquer3
+  // Tempo_CPU_Sistema(&start_cpu_time, &start_sistema_time);
+  // int* arrayDC3 = polynomialProductuDivideConquer3(size, array1, array2);
+  // Tempo_CPU_Sistema(&end_cpu_time, &end_sistema_time);
+  // printf("Algoritimo Divide and Conquer 3 ");
+  // printPolynom(size * 2, arrayDC3);
+  // delta_cpu = end_cpu_time - start_cpu_time;
+  // printf("Tempo de execução de CPU dc3: %f\n",delta_cpu);
+  // fprintf(saidaDC3, "Grau %d Tempo %f\n", size, delta_cpu);
+  // free(arrayDC3);
 
   //Free
   fclose(saidaBF);

@@ -2,33 +2,33 @@
 #include <stdlib.h>
 #include <sys/resource.h>
 #include <string.h>
-#include <math.h>
-
-// #include "tempoCPU.h"
 
 void printPolynom(int s, int* a, char* nome_vet){
   printf("%s = [", nome_vet);
-  for (int i = 0; i < s; i++){
-    if(i==0) printf("%dx^%d", a[i], i);
-    else if(i<s-2) printf(" %dx^%d,", a[i],i);
+  int i;
+  for (i = 0; i < s; i++){
+    if(i == 0) printf("%dx^%d", a[i], i);
+    else if(i < s-1) printf(" %dx^%d,", a[i],i);
     else printf(" %dx^%d", a[i], i);
   }
   printf("]\n");
   return;
 }
 
-int* polynomialProductBruteForce(int size_arrays, int* polinomio_A, int* polinomio_B){
+int* polynomialProductBruteForce(int s, int* a1, int* a2){
 
-  int* prod_polinomios =(int*) malloc(sizeof(int) * ((size_arrays*2)-1) );
+  int* a3;
+  a3 =(int*) malloc(sizeof(int) * ((s*2)-1) );
+  int i,j;
 
-  for (int i = 0; i < (size_arrays*2)-2; i++) prod_polinomios[i] = 0;
+  for ( i = 0; i < (s*2)-2; i++) a3[i] = 0;
 
-  for (int i = 0; i < size_arrays; i++){
-    for (int j = 0; j < size_arrays ; j++){
-      prod_polinomios[i+j] = prod_polinomios[i+j] + (polinomio_A[i]*polinomio_B[j]);
+  for ( i = 0; i < s; i++){
+    for (j = 0; j < s ; j++){
+      a3[i+j] = a3[i+j] + (a1[i]*a2[j]);
     }
   }
-  return prod_polinomios;
+  return a3;
 }
 
 int* polynomialSumMinus(int n, int* a, int* b, int operacao){
@@ -156,88 +156,89 @@ void Tempo_CPU_Sistema(double *seg_CPU_total)
  *seg_CPU_total = (seg_CPU + 0.000001 * mseg_CPU);
 }
 
-int* calcula_produto_polinomial(int** polinomio_A, int** polinomio_B, int grau, char* metodo, double* delta_cpu, int grau_anterior){
+int* alocaVetorPolinomio(int grau, int valor){
+  int* vet = (int*) malloc(sizeof(int) * grau);
+  int i;
+  for (i = 0; i < grau; i++) vet[i] = 2;
+  return vet;
+}
+
+int* calcula_produto_polinomial(int* polinomio_A, int* polinomio_B, int grau, char* metodo, double* delta_cpu){
+    //Inicia tempos de inicio e fim
     double start_cpu_time = 0;
     double end_cpu_time = 0;
 
+    //Declara ponteiro pro vetor resultado
     int* result;
 
+    //Escolhe qual metodo baseado na variavel "metodo"
     Tempo_CPU_Sistema(&start_cpu_time);
-    if(metodo=="bf") result = polynomialProductBruteForce(grau*2, *polinomio_A, *polinomio_B);
-    if(metodo=="dc") result = polynomialProductDivideConquer4(grau*2, *polinomio_A, *polinomio_B);
-    if(metodo=="dc3") result = polynomialProductDivideConquer3(grau*2, *polinomio_A, *polinomio_B);
+    if     (strcmp(metodo, "bf")) result = polynomialProductBruteForce(grau, polinomio_A, polinomio_B);
+    else if(strcmp(metodo, "dc4")) result = polynomialProductDivideConquer4(grau, polinomio_A, polinomio_B);
+    else if(strcmp(metodo, "dc3")) result = polynomialProductDivideConquer3(grau, polinomio_A, polinomio_B);
     Tempo_CPU_Sistema(&end_cpu_time);
 
+    //Calcula delta do tempo de execucao
     *delta_cpu = end_cpu_time - start_cpu_time;
     
-    if(grau!=2){
-
-    *polinomio_A = realloc(*polinomio_A, grau * sizeof(int));
-    *polinomio_B = realloc(*polinomio_A, grau * sizeof(int));
-
-      for(int i=grau_anterior; i<grau; i++){
-        (*polinomio_A)[i] = 3;
-        (*polinomio_B)[i] = 3;
-      }
-      
-    }
-    
+    //Printa qual o metodo sendo usado, grau do polinomio e tempo de execucao
     printf("Grau: %d, Tempo de CPU do método %s: %f\n", grau, metodo, *delta_cpu);
-    printf("\n");
-      
+
     return result;
-
-}
-
-void print(int* pol, int tamanho){
-  for(int i=0; i<tamanho; i++) printf("%d ", pol[i]);
-  printf("\n");
 }
 
 int main(){
-  int index = 1;
-  int grau = 2;
-  int grau_anterior = -1;
-  int* polinomio_A = (int*) malloc(sizeof(int)*grau);
-  int* polinomio_B = (int*) malloc(sizeof(int)*grau);
-  int data_A[] = { 3, 3 };
-  int data_B[] = { 3, 3 };
+  //Declara grau
+  int grau = 4;
 
-  memcpy(polinomio_A, data_A, sizeof(data_A));
-  memcpy(polinomio_B, data_B, sizeof(data_B));
-
+  //Cria ponteiro para os 2 polinomios
+  int* polinomio_A;
+  int* polinomio_B;
+  
+  //Inicia arquivos de saida
   FILE* saidaBF = fopen("saidaBF.txt", "w");
   FILE* saidaDC4 = fopen("saidaDC4.txt", "w");
   FILE* saidaDC3 = fopen("saidaDC3.txt", "w");
 
-  double delta_cpu_bf;
-  double delta_cpu_dc;
-  double delta_cpu_dc3;
+  //Declara ponteiros para double de tempo executado
+  double* delta_cpu_bf;
+  double* delta_cpu_dc4;
+  double* delta_cpu_dc3;
   
-
+  //Loop principal roda até certa potencia de 2
   while(grau<1024){
-    grau_anterior = grau/2;
-    int* result_bf = calcula_produto_polinomial(&polinomio_A, &polinomio_B, grau, "bf", &delta_cpu_bf, grau_anterior);
-    printPolynom(grau, result_bf, "Brute Force");
+
+    //Aloca vetores dos polinomios
+    polinomio_A = alocaVetorPolinomio(grau, 2);
+    polinomio_B = alocaVetorPolinomio(grau, 2);
+
+    //Brute Force
+    int* result_bf = calcula_produto_polinomial(polinomio_A, polinomio_B, grau, "bf", delta_cpu_bf);
+    printPolynom(grau*2, result_bf, "Brute Force");
     free(result_bf);
-    // printPolynom(grau, polinomio_A, "Brute Force");
-    fprintf(saidaBF, "Grau %d Tempo %f\n", grau, delta_cpu_bf);
-    // int* result_dc = calcula_produto_polinomial(&polinomio_A, &polinomio_B, grau, "dc", &delta_cpu_dc, grau_anterior);
-    // free(result_dc);
-    // fprintf(saidaBF, "Grau %d Tempo %f\n", grau, delta_cpu_dc);
+    fprintf(saidaBF, "%d %f\n", grau, *delta_cpu_bf);
 
-    // int* result_dc3 = calcula_produto_polinomial(&polinomio_A, &polinomio_B, grau, "dc3", &delta_cpu_dc3, grau_anterior);
-    // free(result_dc3);
-    // fprintf(saidaDC3, "Grau %d Tempo %f\n", grau, delta_cpu_dc3);
+    //Divide and conquer 4
+    int* result_dc4 = calcula_produto_polinomial(polinomio_A, polinomio_B, grau, "dc4", delta_cpu_dc4);
+    printPolynom(grau*2, result_dc4, "Divide and Conquer 4");
+    free(result_dc4);
+    fprintf(saidaDC4, "%d %f\n", grau, *delta_cpu_dc4);
 
-    index+=1;
-    grau = pow(2, index);
+    //Divide and conquer 3
+    int* result_dc3 = calcula_produto_polinomial(polinomio_A, polinomio_B, grau, "dc3", delta_cpu_dc3);
+    printPolynom(grau*2, result_dc3, "Divide and Conquer 3");
+    free(result_dc3);
+    fprintf(saidaDC3, "%d %f\n", grau, *delta_cpu_dc3);
+
+    free(polinomio_A);
+    free(polinomio_B);
+    grau *= 2;
   }
 
+  //Fecha arquivos
   fclose(saidaBF);
   fclose(saidaDC4);
   fclose(saidaDC3);
-
-
+  
   return 0;
 }

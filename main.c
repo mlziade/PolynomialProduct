@@ -33,7 +33,6 @@ int* polynomialProductBruteForce(int size_arrays, int* polinomio_A, int* polinom
 
 int* polynomialSumMinus(int n, int* a, int* b, int operacao){
   
-<<<<<<< HEAD
   int *reslt = (int*) malloc(sizeof(int) * n);
 
   int i;
@@ -59,17 +58,6 @@ int* polynomialProductDivideConquer3(int n, int* a, int*b){
   int *aux1, *aux2, *aux3, *aux4;
 
   int i;
-=======
-  int *reslt;
-  reslt = (int*) calloc((n*2)-1, sizeof(int));
-  int *aux1, *aux2, *aux3, *aux4;
-  aux1 = (int*) malloc(sizeof(int) * (n-1));
-  aux2 = (int*) malloc(sizeof(int) * (n-1));
-  aux3 = (int*) malloc(sizeof(int) * (n-1));
-  aux4 = (int*) malloc(sizeof(int) * (n-1));
-
-  int i,j;
->>>>>>> 6e162e53ecee0070f19f345fc6b2a7e700d9e4b1
 
   if (n > 2){ //Enquanto s for maior que 2
     aux1 = (int*) malloc(sizeof(int) * (n-1));
@@ -87,7 +75,6 @@ int* polynomialProductDivideConquer3(int n, int* a, int*b){
     //Y = (A0+A1)*(B0+B1)
     aux2 = polynomialProductDivideConquer3(n/2, polynomialSumMinus(n, a, a + n/2, 1), polynomialSumMinus(n, b, b + n/2, 1));
     
-<<<<<<< HEAD
     //A0B1 e A1B0 = Y - (U + Z)
     aux4 = polynomialSumMinus(n*2, aux2, polynomialSumMinus(n*2, aux1, aux3, 1), 2);
 
@@ -141,21 +128,6 @@ int* polynomialProductDivideConquer4(int n, int* a, int*b){
       reslt[i] += aux1[i];
       reslt[i + n/2] += aux2[i] + aux3[i];
       reslt[i + n] += aux4[i];
-=======
-    //A0B0
-    aux1 = polynomialProductDivideConquer(n/2, a, b);
-
-    //A0B1 e A1B0
-    aux2 = polynomialProductDivideConquer(n/2, a, b + n/2);
-    aux3 = polynomialProductDivideConquer(n/2, a + n/2, b);
-
-    //A1B1
-    aux4 = polynomialProductDivideConquer(n/2, a + n/2, b + n/2);
-    for (i = 0; i < 2*(n/2) -1; i++){
-      reslt[i] += aux1[i];
-      reslt[i+n/2] += aux2[i] + aux3[i];
-      reslt[i+n] += aux4[i];
->>>>>>> 6e162e53ecee0070f19f345fc6b2a7e700d9e4b1
     }
     free(aux1);
     free(aux2);
@@ -167,10 +139,6 @@ int* polynomialProductDivideConquer4(int n, int* a, int*b){
     reslt[0] = (a[0]*b[0]);
     reslt[1] = (a[0]*b[1])+ (a[1]*b[0]);
     reslt[2] = (a[1]*b[1]);
-<<<<<<< HEAD
-=======
-    return reslt;
->>>>>>> 6e162e53ecee0070f19f345fc6b2a7e700d9e4b1
   }
   return reslt;
 }
@@ -265,14 +233,11 @@ int main(){
     index+=1;
     grau = pow(2, index);
   }
-<<<<<<< HEAD
 
   fclose(saidaBF);
   fclose(saidaDC4);
   fclose(saidaDC3);
 
-=======
->>>>>>> 6e162e53ecee0070f19f345fc6b2a7e700d9e4b1
 
   return 0;
 }

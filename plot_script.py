@@ -16,7 +16,9 @@ def main():
 
     file.close()
 
-    plt.plot(graus, tempos_dc3)
+    plt.plot(graus, tempos_bf, color="blue")
+    plt.plot(graus[:14], tempos_dc4[:14], color="red")
+    plt.plot(graus, tempos_dc3, color="green")
     plt.show()
 
 main()

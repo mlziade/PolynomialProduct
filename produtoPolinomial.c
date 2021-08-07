@@ -170,7 +170,7 @@ void calculaPol(int size, int* array1, int* array2, FILE** outputs){
     free(arrayDC3);
     printf("Divide and Conquer 3 - Tempo de execução de CPU: %f\n", delta_cpu_dc3);
 
-    fprintf(*outputs, "Grau %d, BF: %f, DC4: %f, DC3: %f\n", size, delta_cpu_bf, delta_cpu_dc4, delta_cpu_dc3);
+    fprintf(*outputs, "%d,%f,%f,%f\n", size, delta_cpu_bf, delta_cpu_dc4, delta_cpu_dc3);
     // printPolynom(size * 2, arrayBF);
 
     return;   

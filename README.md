@@ -51,7 +51,7 @@ Porém podemos fazer melhor com a mesma ideia. Se analisarmos a equação `A0*B0
  * `Y = (A0+A1)*(B0+B1) = A0B0 + A0B1 + A1B0 + A1B1`
 
 Se fizermos,
-`Y-(U+Z) = A0B0-A0B0+A0B1+A1B0+A1B1-A1B1 = A0B1 + A1B0`
+`Y-(U+Z) = A0B0-A0B0 +A0B1+A1B0+ A1B1-A1B1 = A0B1 + A1B0`
 teremos exatamente os valores multiplicados por `x^n/2`.
 
 Então não temos mais a necessidade de fazer a soma de quatro produtos, podemos fazer a soma de ***três*** produtos:
@@ -74,11 +74,15 @@ Uma vez vez que todas as ferramentas estiverem instaladas:
 1. Para executar o script em C, na mesma pasta dos arquivos abra o terminal e execute o comando
 
 ` gcc -o main *.c -lm `
+e depois
+`./main`
 
 2. Para executar o script gerador de gráficos em python, na mesma pasta dos arquivos abra o terminal e execute o comando
 
-`python plot_script.py`
+`python plot_script.py` em Unix
+ou alternamente em Windows 
+`python3 plot_script.py`
 
 ## Integrantes
 Estas aplicações foram desenvolvidas por [Michel Lessa Ziade](https://github.com/mlziade) e [  
-Pedro Ivo Terra Bandoli]().
+Pedro Ivo Terra Bandoli](https://gitHub.com/pedrobandoli).

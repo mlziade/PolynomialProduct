@@ -4,6 +4,7 @@
 #include <math.h>
 #include "produtoPolinomial.h"
 
+//Recebe os 2 vetores de polinomios, aloca eles na memoria e preenche com valores
 void preenche_vetor(int** array1, int** array2, int size){
  
   *array1 = (int*) malloc(sizeof(int)*size);
@@ -26,7 +27,7 @@ int main(){
 
   preenche_vetor(&array1, &array2, size);
 
-  //Arquivos
+  //Inicia arquivos
   FILE* saidaBF = fopen("saidaBF.txt", "w");
   FILE* saidaDC4 = fopen("saidaDC4.txt", "w");
   FILE* saidaDC3 = fopen("saidaDC3.txt", "w");
@@ -39,6 +40,7 @@ int main(){
   }
   while(size<grau_maximo); 
 
+  //Fecha arquivos
   fclose(saidaBF);
   fclose(saidaDC4);
   fclose(saidaDC3);

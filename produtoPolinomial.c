@@ -1,5 +1,6 @@
 #include "tempoCPU.h"
 
+//Percorre com um "for" um vetor de tamanho "s", printando todos os valores nele
 void printPolynom(int s, int* a){
   printf("= [");
   for (int i = 0; i < s; i++){
@@ -11,35 +12,40 @@ void printPolynom(int s, int* a){
   return;
 }
 
+//Algoritmo brute force recebe 2 vetores polinomios e seus tamanhos "s"
 int* polynomialProductBruteForce(int s, int* a1, int* a2){
 
+  //Aloca o vetor resposta de tamanho "s*2 - 1" com valores 0
   int* a3;
-  a3 =(int*) malloc(sizeof(int) * ((s*2)-1) );
+  a3 = (int*) calloc((s*2)-1, sizeof(int));
   int i,j;
 
-  for ( i = 0; i < (s*2)-2; i++) a3[i] = 0;
-
+  //Percorre os vetores com 2 "for" aninhados, igualando a3[i] = a1[x] + a2[y], onde i = x + y
   for ( i = 0; i < s; i++){
     for (j = 0; j < s ; j++){
       a3[i+j] = a3[i+j] + (a1[i]*a2[j]);
     }
   }
+  //Retorna o vetor resposta
   return a3;
 }
 
+//Algoritmo Divide and conquer com 4 produtos, recebe 2 vetores polinomios e seus tamanhos "n"
 int* polynomialProductuDivideConquer4(int n, int* a, int* b){
+
+    //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 4 ponteiros para vetores auxiliares
     int *reslt;
     reslt = (int*) calloc((n*2)-1, sizeof(int));
     int *aux1, *aux2, *aux3, *aux4;
 
     int i;
-
-    if (n > 2){ //Enquanto s for maior que 2
+    if (n > 2){ //Enquanto "n" for maior que 2
         aux1 = (int*) malloc(sizeof(int) * (n-1));
         aux2 = (int*) malloc(sizeof(int) * (n-1));
         aux3 = (int*) malloc(sizeof(int) * (n-1));
         aux4 = (int*) malloc(sizeof(int) * (n-1));
-        //Algoritimo
+
+        //Algoritmo
         
         //A0B0
         aux1 = polynomialProductuDivideConquer4(n/2, a, b);
@@ -51,27 +57,41 @@ int* polynomialProductuDivideConquer4(int n, int* a, int* b){
         //A1B1
         aux4 = polynomialProductuDivideConquer4(n/2, a + n/2, b + n/2);
         
+        //Recebe os valores no vetor resultado
+        //reslt recebe aux1 a partir do i = 0
+        //reslt recebe tambem aux2 + aux3, porem a partir de i = n/2, pois ambos termos estão multiplicados por x^n/2
+        //reslt recebe tambem aux4, porem a partir de i = n, pois aux4 está multiplicado por x^n 
         for (i = 0; i < 2*(n/2) -1; i++){
-        reslt[i] += aux1[i];
-        reslt[i + n/2] += aux2[i] + aux3[i];
-        reslt[i + n] += aux4[i];
+          reslt[i] += aux1[i];
+          reslt[i + n/2] += aux2[i] + aux3[i];
+          reslt[i + n] += aux4[i];
         }
+        
+        //Da free nos vetores
         free(aux1);
         free(aux2);
         free(aux3);
         free(aux4);
+
+        //Retorna o vetor resultado
         return reslt;
     }
-    else{ //Quando s chegar a 2
+    else{ //Quando "n" chegar a 2, fica simples o suficiente para fazer o produto
         reslt[0] = (a[0]*b[0]);
         reslt[1] = (a[0]*b[1])+ (a[1]*b[0]);
         reslt[2] = (a[1]*b[1]);
     }
+    //Retorna o vetor resultado
     return reslt;
 }
 
+//Algoritmo para soma ou subtração de polinomios
+//recebe 2 vetores polinomios, o tamanho "n" dos vetores e a operacao que sera realizada (1 para + e 2 para -)
 int* polynomialSumMinus(int n, int* a, int* b, int operacao){
+    //Aloca o vetor resultado de tamanho "n"
     int *reslt = (int*) malloc(sizeof(int) * n);
+
+    //Usa um "for" para percorrer ambos vetores e igualar resultado[i] = a[i] + b[i]
 
     if(operacao == 1){
         for(int i = 0; i < n; i++){
@@ -85,12 +105,14 @@ int* polynomialSumMinus(int n, int* a, int* b, int operacao){
         }
     }
 
+    //Retorna vetor resultado
     return reslt;
 }
 
-
+//Algoritmo Divide and conquer com 4 produtos, recebe 2 vetores polinomios e seus tamanhos "n"
 int* polynomialProductuDivideConquer3(int n, int* a, int* b){
 
+  //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 3 ponteiros para vetores auxiliares
   int *reslt;
   reslt = (int*) calloc((n*2)-1, sizeof(int));
   int *aux1, *aux2, *aux3, *aux4;
@@ -116,19 +138,26 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
     //A0B1 e A1B0 = Y - (U + Z)
     aux4 = polynomialSumMinus(n*2, aux2, polynomialSumMinus(n*2, aux1, aux3, 1), 2);
 
-    //
+    //Recebe os valores no vetor resultado
+    //reslt recebe aux1 a partir do i = 0
+    //reslt recebe tambem aux2 + aux3, porem a partir de i = n/2, pois ambos termos estão multiplicados por x^n/2
+    //reslt recebe tambem aux4, porem a partir de i = n, pois aux4 está multiplicado por x^n 
     for(i = 0; i < 2*(n/2) -1; i++){
       reslt[i] += aux1[i];
       reslt[i + n/2] += aux4[i];
       reslt[i + n] += aux3[i];
     }
+
+    //Da free nos vetores auxiliares
     free(aux1);
     free(aux2);
     free(aux3);
     free(aux4);
+
+    //Retorna o vetor resultado
     return reslt;
   }
-  else{ //Quando s chegar a 2
+  else{ //Quando "n" chegar a 2, fica simples o suficiente para fazer o produto
     reslt[0] = (a[0]*b[0]);
     reslt[1] = (a[0]*b[1])+ (a[1]*b[0]);
     reslt[2] = (a[1]*b[1]);
@@ -136,7 +165,7 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
   return reslt;
 }
 
-
+//Função para gerenciar as chamadas de função, medidas de tempo e escrita dos resultados no arquivo, para cada repetição de grau
 void calculaPol(int size, int* array1, int* array2, FILE** outputs){
     double start_cpu_time = 0;
     double end_cpu_time = 0;
@@ -153,6 +182,7 @@ void calculaPol(int size, int* array1, int* array2, FILE** outputs){
     free(arrayBF);
     printf("Brute Force - Tempo de execução de CPU: %f\n", delta_cpu_bf);
 
+    //Utilizamos um limitador de tamanho para Divide and Conquer 4, devido a restrições de memória RAM e a ineficiente do algortimo
     if(size<32768){
       Tempo_CPU_Sistema(&start_cpu_time);
       int* arrayDC4 = polynomialProductuDivideConquer4(size, array1, array2);

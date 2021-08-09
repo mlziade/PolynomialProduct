@@ -21,29 +21,24 @@ void preenche_vetor(int** array1, int** array2, int size){
 int main(){
 
   int size = 2;
-  int grau_maximo = pow(2,25);
+  int grau_maximo = pow(2,20);
   int *array1;
   int *array2;
 
   preenche_vetor(&array1, &array2, size);
 
   //Inicia arquivos
-  FILE* saidaBF = fopen("saidaBF.txt", "w");
-  FILE* saidaDC4 = fopen("saidaDC4.txt", "w");
-  FILE* saidaDC3 = fopen("saidaDC3.txt", "w");
+  FILE* saida = fopen("saida.txt", "w");
 
   //Mede tempo de cpu
   do{ 
-    calculaPol(size, array1, array2, &saidaBF);
+    calculaPol(size, array1, array2, &saida);
     size*=2;
     preenche_vetor(&array1, &array2, size);
   }
   while(size<grau_maximo); 
 
   //Fecha arquivos
-  fclose(saidaBF);
-  fclose(saidaDC4);
-  fclose(saidaDC3);
-
+  fclose(saida);
   return 0;
 }

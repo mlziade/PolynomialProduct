@@ -2,7 +2,7 @@
 
 //Percorre com um "for" um vetor de tamanho "s", printando todos os valores nele
 void printPolynom(int s, int* a){
-  printf("= [");
+  printf("Vet = [");
   for (int i = 0; i < s; i++){
     if(i==0) printf("%dx^%d ", a[i], i);
     else if(i<s-1) printf(" %dx^%d,", a[i],i);
@@ -20,7 +20,7 @@ int* polynomialProductBruteForce(int s, int* a1, int* a2){
   a3 = (int*) calloc((s*2)-1, sizeof(int));
   int i,j;
 
-  //Percorre os vetores com 2 "for" aninhados, igualando a3[i] = a1[x] + a2[y], onde i = x + y
+  //Percorre os vetores com 2 "for" aninhados, igualando a3[i] a soma de todos os produtos a1[x] * a2[y], onde i = x + y
   for ( i = 0; i < s; i++){
     for (j = 0; j < s ; j++){
       a3[i+j] = a3[i+j] + (a1[i]*a2[j]);
@@ -31,6 +31,7 @@ int* polynomialProductBruteForce(int s, int* a1, int* a2){
 }
 
 //Algoritmo Divide and conquer com 4 produtos, recebe 2 vetores polinomios e seus tamanhos "n"
+//Atualização => tambem paramos de alocar aux, pois eles estavam sendo reescritos na recursão, melhorando desempenho e consumo de memória
 int* polynomialProductuDivideConquer4(int n, int* a, int* b){
 
     //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 4 ponteiros para vetores auxiliares
@@ -39,11 +40,11 @@ int* polynomialProductuDivideConquer4(int n, int* a, int* b){
     int *aux1, *aux2, *aux3, *aux4;
 
     int i;
-    if (n > 2){ //Enquanto "n" for maior que 2
-        aux1 = (int*) malloc(sizeof(int) * (n-1));
-        aux2 = (int*) malloc(sizeof(int) * (n-1));
-        aux3 = (int*) malloc(sizeof(int) * (n-1));
-        aux4 = (int*) malloc(sizeof(int) * (n-1));
+    if (n > 64){ //Enquanto "n" for maior que 2
+        // aux1 = (int*) malloc(sizeof(int) * (n-1));
+        // aux2 = (int*) malloc(sizeof(int) * (n-1));
+        // aux3 = (int*) malloc(sizeof(int) * (n-1));
+        // aux4 = (int*) malloc(sizeof(int) * (n-1));
 
         //Algoritmo
         
@@ -76,10 +77,8 @@ int* polynomialProductuDivideConquer4(int n, int* a, int* b){
         //Retorna o vetor resultado
         return reslt;
     }
-    else{ //Quando "n" chegar a 2, fica simples o suficiente para fazer o produto
-        reslt[0] = (a[0]*b[0]);
-        reslt[1] = (a[0]*b[1])+ (a[1]*b[0]);
-        reslt[2] = (a[1]*b[1]);
+    else{ //Quando "n" chegar a 64, fica simples o suficiente para utilizar brute force
+        reslt = polynomialProductBruteForce(n/2, a, b);
     }
     //Retorna o vetor resultado
     return reslt;
@@ -92,7 +91,6 @@ int* polynomialSumMinus(int n, int* a, int* b, int operacao){
     int *reslt = (int*) malloc(sizeof(int) * n);
 
     //Usa um "for" para percorrer ambos vetores e igualar resultado[i] = a[i] + b[i]
-
     if(operacao == 1){
         for(int i = 0; i < n; i++){
             reslt[i] = a[i] + b[i];
@@ -110,6 +108,8 @@ int* polynomialSumMinus(int n, int* a, int* b, int operacao){
 }
 
 //Algoritmo Divide and conquer com 4 produtos, recebe 2 vetores polinomios e seus tamanhos "n"
+//Atualização => para melhorar desempenho do algoritmo, a recursão só vai até grau = 2^6 ,depois é executado um brute force
+//Atualização => tambem paramos de alocar aux, pois eles estavam sendo reescritos na recursão, melhorando desempenho e consumo de memória
 int* polynomialProductuDivideConquer3(int n, int* a, int* b){
 
   //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 3 ponteiros para vetores auxiliares
@@ -119,11 +119,11 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
 
   int i;
 
-  if (n > 2){ //Enquanto s for maior que 2
-    aux1 = (int*) malloc(sizeof(int) * (n-1));
-    aux2 = (int*) malloc(sizeof(int) * (n-1));
-    aux3 = (int*) malloc(sizeof(int) * (n-1));
-    aux4 = (int*) malloc(sizeof(int) * (n-1));
+  if (n > 64){ //Enquanto s for maior que 2
+    // aux1 = (int*) malloc(sizeof(int) * (n-1));
+    // aux2 = (int*) malloc(sizeof(int) * (n-1));
+    // aux3 = (int*) malloc(sizeof(int) * (n-1));
+    // aux4 = (int*) malloc(sizeof(int) * (n-1));
     //Algoritimo
 
     //U = A0B0
@@ -157,10 +157,8 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
     //Retorna o vetor resultado
     return reslt;
   }
-  else{ //Quando "n" chegar a 2, fica simples o suficiente para fazer o produto
-    reslt[0] = (a[0]*b[0]);
-    reslt[1] = (a[0]*b[1])+ (a[1]*b[0]);
-    reslt[2] = (a[1]*b[1]);
+  else{ //Quando "n" chegar a 64, fica simples o suficiente para utilizar brute force
+    reslt = polynomialProductBruteForce(n/2, a, b);
   }
   return reslt;
 }
@@ -179,15 +177,17 @@ void calculaPol(int size, int* array1, int* array2, FILE** outputs){
     int* arrayBF = polynomialProductBruteForce(size, array1, array2);
     Tempo_CPU_Sistema(&end_cpu_time);
     delta_cpu_bf = end_cpu_time - start_cpu_time;
+    // printPolynom(size * 2, arrayBF);
     free(arrayBF);
     printf("Brute Force - Tempo de execução de CPU: %f\n", delta_cpu_bf);
 
     //Utilizamos um limitador de tamanho para Divide and Conquer 4, devido a restrições de memória RAM e a ineficiente do algortimo
-    if(size<32768){
+    if(size<8300){
       Tempo_CPU_Sistema(&start_cpu_time);
       int* arrayDC4 = polynomialProductuDivideConquer4(size, array1, array2);
       Tempo_CPU_Sistema(&end_cpu_time);
       delta_cpu_dc4 = end_cpu_time - start_cpu_time;
+      // printPolynom(size * 2, arrayDC4);
       free(arrayDC4);
       printf("Divide and Conquer 4 - Tempo de execução de CPU: %f\n", delta_cpu_dc4);
 
@@ -197,11 +197,11 @@ void calculaPol(int size, int* array1, int* array2, FILE** outputs){
     int* arrayDC3 = polynomialProductBruteForce(size, array1, array2);
     Tempo_CPU_Sistema(&end_cpu_time);
     delta_cpu_dc3 = end_cpu_time - start_cpu_time;
+    // printPolynom(size * 2, arrayDC3);
     free(arrayDC3);
     printf("Divide and Conquer 3 - Tempo de execução de CPU: %f\n", delta_cpu_dc3);
 
     fprintf(*outputs, "%d,%f,%f,%f\n", size, delta_cpu_bf, delta_cpu_dc4, delta_cpu_dc3);
-    // printPolynom(size * 2, arrayBF);
 
     return;   
 }

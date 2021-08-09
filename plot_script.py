@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 def main():
-    file = open("saidaBF.txt", 'r')
+    file = open("saida.txt", 'r')
     tempos_bf = []
     tempos_dc4 = []
     tempos_dc3 = []

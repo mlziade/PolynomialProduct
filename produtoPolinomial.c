@@ -40,7 +40,7 @@ int* polynomialProductuDivideConquer4(int n, int* a, int* b){
     int *aux1, *aux2, *aux3, *aux4;
 
     int i;
-    if (n > 64){ //Enquanto "n" for maior que 2
+    if (n > 64){ //Enquanto "n" for maior que 64
         // aux1 = (int*) malloc(sizeof(int) * (n-1));
         // aux2 = (int*) malloc(sizeof(int) * (n-1));
         // aux3 = (int*) malloc(sizeof(int) * (n-1));
@@ -62,7 +62,7 @@ int* polynomialProductuDivideConquer4(int n, int* a, int* b){
         //reslt recebe aux1 a partir do i = 0
         //reslt recebe tambem aux2 + aux3, porem a partir de i = n/2, pois ambos termos estão multiplicados por x^n/2
         //reslt recebe tambem aux4, porem a partir de i = n, pois aux4 está multiplicado por x^n 
-        for (i = 0; i < 2*(n/2) -1; i++){
+        for(i = 0; i < 2*(n/2) -1; i++){
           reslt[i] += aux1[i];
           reslt[i + n/2] += aux2[i] + aux3[i];
           reslt[i + n] += aux4[i];
@@ -78,7 +78,7 @@ int* polynomialProductuDivideConquer4(int n, int* a, int* b){
         return reslt;
     }
     else{ //Quando "n" chegar a 64, fica simples o suficiente para utilizar brute force
-        reslt = polynomialProductBruteForce(n/2, a, b);
+      reslt = polynomialProductBruteForce(n, a, b);
     }
     //Retorna o vetor resultado
     return reslt;
@@ -112,14 +112,14 @@ int* polynomialSumMinus(int n, int* a, int* b, int operacao){
 //Atualização => tambem paramos de alocar aux, pois eles estavam sendo reescritos na recursão, melhorando desempenho e consumo de memória
 int* polynomialProductuDivideConquer3(int n, int* a, int* b){
 
-  //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 3 ponteiros para vetores auxiliares
+  //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 4 ponteiros para vetores auxiliares
   int *reslt;
   reslt = (int*) calloc((n*2)-1, sizeof(int));
   int *aux1, *aux2, *aux3, *aux4;
 
   int i;
 
-  if (n > 64){ //Enquanto s for maior que 2
+  if (n > 64){ //Enquanto s for maior que 64
     // aux1 = (int*) malloc(sizeof(int) * (n-1));
     // aux2 = (int*) malloc(sizeof(int) * (n-1));
     // aux3 = (int*) malloc(sizeof(int) * (n-1));
@@ -140,8 +140,8 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
 
     //Recebe os valores no vetor resultado
     //reslt recebe aux1 a partir do i = 0
-    //reslt recebe tambem aux2 + aux3, porem a partir de i = n/2, pois ambos termos estão multiplicados por x^n/2
-    //reslt recebe tambem aux4, porem a partir de i = n, pois aux4 está multiplicado por x^n 
+    //reslt recebe tambem aux4, porem a partir de i = n/2, pois aux4 está multiplicados por x^n/2
+    //reslt recebe tambem aux3, porem a partir de i = n, pois aux3 está multiplicado por x^n 
     for(i = 0; i < 2*(n/2) -1; i++){
       reslt[i] += aux1[i];
       reslt[i + n/2] += aux4[i];
@@ -158,7 +158,7 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
     return reslt;
   }
   else{ //Quando "n" chegar a 64, fica simples o suficiente para utilizar brute force
-    reslt = polynomialProductBruteForce(n/2, a, b);
+    reslt = polynomialProductBruteForce(n, a, b);
   }
   return reslt;
 }
@@ -181,8 +181,8 @@ void calculaPol(int size, int* array1, int* array2, FILE** outputs){
     free(arrayBF);
     printf("Brute Force - Tempo de execução de CPU: %f\n", delta_cpu_bf);
 
-    //Utilizamos um limitador de tamanho para Divide and Conquer 4, devido a restrições de memória RAM e a ineficiente do algortimo
-    if(size<8300){
+    // Utilizamos um limitador de tamanho para Divide and Conquer 4, devido a restrições de memória RAM e a ineficiente do algortimo
+    if(size<1025){
       Tempo_CPU_Sistema(&start_cpu_time);
       int* arrayDC4 = polynomialProductuDivideConquer4(size, array1, array2);
       Tempo_CPU_Sistema(&end_cpu_time);
@@ -194,7 +194,7 @@ void calculaPol(int size, int* array1, int* array2, FILE** outputs){
     }
     
     Tempo_CPU_Sistema(&start_cpu_time);
-    int* arrayDC3 = polynomialProductBruteForce(size, array1, array2);
+    int* arrayDC3 = polynomialProductuDivideConquer3(size, array1, array2);
     Tempo_CPU_Sistema(&end_cpu_time);
     delta_cpu_dc3 = end_cpu_time - start_cpu_time;
     // printPolynom(size * 2, arrayDC3);

@@ -114,7 +114,7 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
 
   //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 4 ponteiros para vetores auxiliares
   int *reslt;
-  int *aux1, *aux2, *aux3, *aux4;
+  int *aux1, *aux2, *aux3, *aux4, *aux5, *aux6, *aux7;
 
   int i;
 
@@ -132,16 +132,23 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
     //Z = A1B1
     aux3 = polynomialProductuDivideConquer3(n/2, a + n/2, b + n/2);
 
+    //Soma A0+A1
+    aux5 = polynomialSumMinus(n, a, a + n/2, 1);
+    //Soma B0+B1
+    aux6 = polynomialSumMinus(n, b, b + n/2, 1);
     //Y = (A0+A1)*(B0+B1)
-    aux2 = polynomialProductuDivideConquer3(n/2, polynomialSumMinus(n, a, a + n/2, 1), polynomialSumMinus(n, b, b + n/2, 1));
+    aux2 = polynomialProductuDivideConquer3(n/2, aux5, aux6);
     
+    //U+Z
+    aux7 = polynomialSumMinus(n*2, aux1, aux3, 1);
     //A0B1 e A1B0 = Y - (U + Z)
-    aux4 = polynomialSumMinus(n*2, aux2, polynomialSumMinus(n*2, aux1, aux3, 1), 2);
+    aux4 = polynomialSumMinus(n*2, aux2, aux7, 2);
 
     //Recebe os valores no vetor resultado
     //reslt recebe aux1 a partir do i = 0
     //reslt recebe tambem aux4, porem a partir de i = n/2, pois aux4 está multiplicados por x^n/2
     //reslt recebe tambem aux3, porem a partir de i = n, pois aux3 está multiplicado por x^n 
+    
     for(i = 0; i < 2*(n/2) -1; i++){
       reslt[i] += aux1[i];
       reslt[i + n/2] += aux4[i];
@@ -153,6 +160,9 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
     free(aux2);
     free(aux3);
     free(aux4);
+    free(aux5);
+    free(aux6);
+    free(aux7);
 
     //Retorna o vetor resultado
     return reslt;

@@ -20,8 +20,8 @@ void preenche_vetor(int** array1, int** array2, int size){
 
 int main(){
 
-  int size = 64;
-  int grau_maximo = pow(2,19);
+  int size = 2;
+  int grau_maximo = pow(2, 30);
   int *array1;
   int *array2;
 

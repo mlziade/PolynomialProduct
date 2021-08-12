@@ -34,18 +34,15 @@ int* polynomialProductBruteForce(int s, int* a1, int* a2){
 //Atualização => tambem paramos de alocar aux, pois eles estavam sendo reescritos na recursão, melhorando desempenho e consumo de memória
 int* polynomialProductuDivideConquer4(int n, int* a, int* b){
 
-    //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 4 ponteiros para vetores auxiliares
+    //Cria um ponteiro para vetor resultado e 4 ponteiros para vetores auxiliares
     int *reslt;
     int *aux1, *aux2, *aux3, *aux4;
 
     int i;
     if (n > 64){ //Enquanto "n" for maior que 64
+      //Aloca o vetor resposta com tamanho "n*2 - 1" com valores 0
       reslt = (int*) calloc((n*2)-1, sizeof(int));
-      // aux1 = (int*) malloc(sizeof(int) * (n-1));
-      // aux2 = (int*) malloc(sizeof(int) * (n-1));
-      // aux3 = (int*) malloc(sizeof(int) * (n-1));
-      // aux4 = (int*) malloc(sizeof(int) * (n-1));
-
+      
       //Algoritmo
         
       //A0B0
@@ -112,18 +109,16 @@ int* polynomialSumMinus(int n, int* a, int* b, int operacao){
 //Atualização => tambem paramos de alocar aux, pois eles estavam sendo reescritos na recursão, melhorando desempenho e consumo de memória
 int* polynomialProductuDivideConquer3(int n, int* a, int* b){
 
-  //Aloca o vetor resposta de tamanho "n*2 - 1" com valores 0 e 4 ponteiros para vetores auxiliares
+  //Cria ponteiro para vetor resposta e 7 ponteiros para vetores auxiliares
   int *reslt;
   int *aux1, *aux2, *aux3, *aux4, *aux5, *aux6, *aux7;
 
   int i;
 
   if (n > 64){ //Enquanto s for maior que 64
+    //Aloca vetor resultado com valores 0
     reslt = (int*) calloc((n*2)-1, sizeof(int));
-    // aux1 = (int*) malloc(sizeof(int) * (n-1));
-    // aux2 = (int*) malloc(sizeof(int) * (n-1));
-    // aux3 = (int*) malloc(sizeof(int) * (n-1));
-    // aux4 = (int*) malloc(sizeof(int) * (n-1));
+
     //Algoritimo
 
     //U = A0B0
@@ -140,9 +135,9 @@ int* polynomialProductuDivideConquer3(int n, int* a, int* b){
     aux2 = polynomialProductuDivideConquer3(n/2, aux5, aux6);
     
     //U+Z
-    aux7 = polynomialSumMinus(n*2, aux1, aux3, 1);
+    aux7 = polynomialSumMinus(n*2 - 1, aux1, aux3, 1);
     //A0B1 e A1B0 = Y - (U + Z)
-    aux4 = polynomialSumMinus(n*2, aux2, aux7, 2);
+    aux4 = polynomialSumMinus(n*2 - 1, aux2, aux7, 2);
 
     //Recebe os valores no vetor resultado
     //reslt recebe aux1 a partir do i = 0
@@ -192,7 +187,6 @@ void calculaPol(int size, int* array1, int* array2, FILE** outputs){
     printf("Brute Force - Tempo de execução de CPU: %f\n", delta_cpu_bf);
 
     // Utilizamos um limitador de tamanho para Divide and Conquer 4, devido a restrições de memória RAM e a ineficiente do algortimo
-    if(1){
       Tempo_CPU_Sistema(&start_cpu_time);
       int* arrayDC4 = polynomialProductuDivideConquer4(size, array1, array2);
       Tempo_CPU_Sistema(&end_cpu_time);
@@ -200,8 +194,6 @@ void calculaPol(int size, int* array1, int* array2, FILE** outputs){
       // printPolynom(size * 2, arrayDC4);
       free(arrayDC4);
       printf("Divide and Conquer 4 - Tempo de execução de CPU: %f\n", delta_cpu_dc4);
-
-    }
     
     Tempo_CPU_Sistema(&start_cpu_time);
     int* arrayDC3 = polynomialProductuDivideConquer3(size, array1, array2);
